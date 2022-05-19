@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/iamnotrodger/shopify-inventory-server/internal/query"
 	"github.com/iamnotrodger/shopify-inventory-server/internal/util"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -47,7 +48,8 @@ func (h *Handler) GetInventories(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	warehouseID := params["id"]
 
-	inventories, err := h.store.FindInventories(r.Context(), warehouseID)
+	queryParam := query.NewWarehouseQuery(r.URL.Query())
+	inventories, err := h.store.FindInventories(r.Context(), warehouseID, queryParam)
 	if err != nil {
 		util.HandleError(w, err)
 		return

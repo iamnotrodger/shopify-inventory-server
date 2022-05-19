@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/iamnotrodger/shopify-inventory-server/internal/model"
+	"github.com/iamnotrodger/shopify-inventory-server/internal/query"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -47,8 +48,60 @@ func (s *Store) Find(ctx context.Context, warehouseID string) (*model.Warehouse,
 	return warehouse, nil
 }
 
-func (s *Store) FindInventories(ctx context.Context, warehouseID string) ([]*model.Inventory, error) {
-	return nil, nil
+func (s *Store) FindInventories(ctx context.Context, warehouseID string, queryParam ...query.QueryParams) ([]*model.Inventory, error) {
+	id, err := primitive.ObjectIDFromHex(warehouseID)
+	if err != nil {
+		return nil, primitive.ErrInvalidHex
+	}
+
+	match := bson.D{{Key: "$match", Value: bson.M{"_id": id}}}
+	matchArtists := bson.D{{
+		Key: "$match",
+		Value: bson.D{{
+			Key: "$expr",
+			Value: bson.D{{
+				Key:   "$in",
+				Value: bson.A{"$_id", "$$inventory_ids"},
+			}},
+		}},
+	}}
+
+	lookupPipeline := bson.A{matchArtists}
+	if len(queryParam) > 0 {
+		for _, queryOpts := range queryParam[0].GetPipeline() {
+			lookupPipeline = append(lookupPipeline, queryOpts)
+		}
+	}
+
+	lookup := bson.D{{
+		Key: "$lookup",
+		Value: bson.D{
+			{Key: "from", Value: "inventory"},
+			{Key: "let", Value: bson.D{{Key: "inventory_ids", Value: "$inventory_ids"}}},
+			{Key: "pipeline", Value: lookupPipeline},
+			{Key: "as", Value: "inventories"},
+		},
+	}}
+
+	pipeline := mongo.Pipeline{match, lookup}
+	cursor, err := s.db.Collection(WAREHOUSE).Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	if cursor.RemainingBatchLength() < 1 {
+		return nil, mongo.ErrNoDocuments
+	}
+
+	warehouse := model.Warehouse{}
+	cursor.Next(ctx)
+	cursor.Decode(&warehouse)
+	if err = cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return warehouse.Inventories, nil
 }
 
 func (s *Store) Insert(ctx context.Context, inventory *model.Inventory) error {
