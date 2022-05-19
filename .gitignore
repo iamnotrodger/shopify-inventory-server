@@ -4,3 +4,4 @@ build
 
 # web
 web/node_modules
+web/build
