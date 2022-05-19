@@ -160,7 +160,7 @@ func (s *Store) InsertInventory(ctx context.Context, warehouseID string, invento
 		// Add inventory to warehouse
 		err := s.appendElement(sessCtx, &listOperationConfig{
 			collection: WAREHOUSE,
-			field:      WAREHOUSE_FIELD,
+			field:      INVENTORY_FIELD,
 			id:         warehouseIDObj,
 			element:    inventoryIDObj,
 		})
@@ -171,9 +171,9 @@ func (s *Store) InsertInventory(ctx context.Context, warehouseID string, invento
 		// Add warehouse to inventory
 		err = s.appendElement(sessCtx, &listOperationConfig{
 			collection: INVENTORY,
-			field:      INVENTORY_FIELD,
-			id:         warehouseIDObj,
-			element:    inventoryIDObj,
+			field:      WAREHOUSE_FIELD,
+			id:         inventoryIDObj,
+			element:    warehouseIDObj,
 		})
 		if err != nil {
 			return nil, err
@@ -224,7 +224,7 @@ func (s *Store) DeleteInventory(ctx context.Context, warehouseID string, invento
 		// Remove inventory to warehouse
 		err := s.removeElement(sessCtx, &listOperationConfig{
 			collection: WAREHOUSE,
-			field:      WAREHOUSE_FIELD,
+			field:      INVENTORY_FIELD,
 			id:         warehouseIDObj,
 			element:    inventoryIDObj,
 		})
@@ -235,9 +235,9 @@ func (s *Store) DeleteInventory(ctx context.Context, warehouseID string, invento
 		// Remove warehouse to inventory
 		err = s.removeElement(sessCtx, &listOperationConfig{
 			collection: INVENTORY,
-			field:      INVENTORY_FIELD,
-			id:         warehouseIDObj,
-			element:    inventoryIDObj,
+			field:      WAREHOUSE_FIELD,
+			id:         inventoryIDObj,
+			element:    warehouseIDObj,
 		})
 		if err != nil {
 			return nil, err
@@ -269,7 +269,7 @@ type listOperationConfig struct {
 
 func (s *Store) appendElement(ctx context.Context, config *listOperationConfig) error {
 	res, err := s.db.Collection(config.collection).UpdateByID(ctx, config.id, bson.M{
-		"$push": bson.M{config.field: config.element},
+		"$addToSet": bson.M{config.field: config.element},
 	})
 	if err != nil {
 		return err
