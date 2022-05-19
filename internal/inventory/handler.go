@@ -2,6 +2,7 @@ package inventory
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -100,6 +101,18 @@ func (h *Handler) Post(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	inventoryID := params["id"]
+
+	err := h.store.Delete(r.Context(), inventoryID)
+	if err != nil {
+		util.HandleError(w, err)
+		return
+	}
+
+	msg := fmt.Sprintf("inventory %v deleted", inventoryID)
+	w.WriteHeader(200)
+	w.Write([]byte(msg))
 }
 
 func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {

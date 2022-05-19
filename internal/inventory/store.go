@@ -131,7 +131,16 @@ func (s *Store) Insert(ctx context.Context, inventory *model.Inventory) error {
 }
 
 func (s *Store) Delete(ctx context.Context, inventoryID string) error {
-	return nil
+	id, err := primitive.ObjectIDFromHex(inventoryID)
+	if err != nil {
+		return err
+	}
+
+	res, err := s.collection.DeleteOne(ctx, bson.M{"_id": id})
+	if res.DeletedCount == 0 {
+		return mongo.ErrNoDocuments
+	}
+	return err
 }
 
 func (s *Store) Update(ctx context.Context, inventoryID string, inventory *model.Inventory) error {
