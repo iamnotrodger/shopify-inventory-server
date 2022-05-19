@@ -140,8 +140,17 @@ func (s *Store) InsertInventory(ctx context.Context, warehouseID string, invento
 	return nil
 }
 
-func (s *Store) Delete(ctx context.Context, inventoryID string) error {
-	return nil
+func (s *Store) Delete(ctx context.Context, warehouseID string) error {
+	id, err := primitive.ObjectIDFromHex(warehouseID)
+	if err != nil {
+		return err
+	}
+
+	res, err := s.db.Collection(WAREHOUSE).DeleteOne(ctx, bson.M{"_id": id})
+	if res.DeletedCount == 0 {
+		return mongo.ErrNoDocuments
+	}
+	return err
 }
 
 // DeleteInventory is a transaction delete inventory to warehouse and delete warehouse to inventory

@@ -2,6 +2,7 @@ package warehouse
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -25,6 +26,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/api/warehouse", h.Post).Methods("POST")
 	router.HandleFunc("/api/warehouse", h.GetMany).Methods("GET")
 	router.HandleFunc("/api/warehouse/{id}", h.Get).Methods("GET")
+	router.HandleFunc("/api/warehouse/{id}", h.Delete).Methods("DELETE")
 	router.HandleFunc("/api/warehouse/{id}/inventory", h.GetInventories).Methods("GET")
 	router.HandleFunc("/api/warehouse/{id}/inventory/{inventoryID}", h.PostInventory).Methods("POST")
 	router.HandleFunc("/api/warehouse/{id}/inventory/{inventoryID}", h.DeleteInventory).Methods("DELETE")
@@ -97,6 +99,21 @@ func (h *Handler) Post(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(&warehouse)
+}
+
+func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	warehouseID := params["id"]
+
+	err := h.store.Delete(r.Context(), warehouseID)
+	if err != nil {
+		util.HandleError(w, err)
+		return
+	}
+
+	msg := fmt.Sprintf("warehouse %v deleted", warehouseID)
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(msg))
 }
 
 // PostInventory will add inventory to warehouse and add warehouse to the inventory
