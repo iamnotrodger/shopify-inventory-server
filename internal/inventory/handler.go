@@ -28,6 +28,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/api/inventory/{id}", h.Get).Methods("GET")
 	router.HandleFunc("/api/inventory/{id}", h.Delete).Methods("DELETE")
 	router.HandleFunc("/api/inventory/{id}", h.Update).Methods("PUT")
+	router.HandleFunc("/api/inventory/{id}", h.Patch).Methods("PATCH")
 	router.HandleFunc("/api/inventory/{id}/warehouse", h.GetWarehouses).Methods("GET")
 }
 
@@ -116,4 +117,50 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	params := mux.Vars(r)
+	inventoryID := params["id"]
+
+	var inventory model.Inventory
+	err := json.NewDecoder(r.Body).Decode(&inventory)
+	if err != nil {
+		util.HandleError(w, err)
+		return
+	}
+
+	if err = inventory.Validate(); err != nil {
+		util.HandleError(w, err)
+		return
+	}
+
+	err = h.store.Update(r.Context(), inventoryID, &inventory)
+	if err != nil {
+		util.HandleError(w, err)
+		return
+	}
+
+	json.NewEncoder(w).Encode(&inventory)
+}
+
+func (h *Handler) Patch(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	params := mux.Vars(r)
+	inventoryID := params["id"]
+
+	var inventory model.Inventory
+	err := json.NewDecoder(r.Body).Decode(&inventory)
+	if err != nil {
+		util.HandleError(w, err)
+		return
+	}
+
+	err = h.store.Update(r.Context(), inventoryID, &inventory)
+	if err != nil {
+		util.HandleError(w, err)
+		return
+	}
+
+	json.NewEncoder(w).Encode(&inventory)
 }

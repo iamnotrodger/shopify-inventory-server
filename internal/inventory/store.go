@@ -144,5 +144,21 @@ func (s *Store) Delete(ctx context.Context, inventoryID string) error {
 }
 
 func (s *Store) Update(ctx context.Context, inventoryID string, inventory *model.Inventory) error {
-	return nil
+	var err error
+	inventory.ID, err = primitive.ObjectIDFromHex(inventoryID)
+	if err != nil {
+		return primitive.ErrInvalidHex
+	}
+
+	fmt.Println(inventory)
+
+	res, err := s.collection.UpdateOne(ctx, bson.M{"_id": inventory.ID}, bson.M{
+		"$set": inventory.GetBSON(),
+	})
+	if res.ModifiedCount == 0 {
+		return mongo.ErrNoDocuments
+	}
+
+	fmt.Println("got here 2")
+	return err
 }
