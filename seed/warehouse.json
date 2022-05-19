@@ -1,0 +1,27 @@
+[
+	{
+		"_id": { "$oid": "60e0850266d6c13d7b599b69" },
+		"name": "warehouse_1",
+		"location": {
+			"street": "street_1",
+			"city": "city_1",
+			"province": "province_1",
+			"country": "country_1"
+		},
+		"inventory_ids": [
+			{ "$oid": "60e0c4aeffdd3e5211a78a32" },
+			{ "$oid": "60e0c4aeffdd3e5211a78a33" }
+		]
+	},
+	{
+		"_id": { "$oid": "60e0850266d6c13d7b599b6a" },
+		"name": "warehouse_2",
+		"location": {
+			"street": "street_2",
+			"city": "city_2",
+			"province": "province_2",
+			"country": "country_2"
+		},
+		"inventory_ids": [{ "$oid": "60e0c4aeffdd3e5211a78a32" }]
+	}
+]
