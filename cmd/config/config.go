@@ -12,6 +12,7 @@ const (
 	defaultMongoURI    = "mongodb://localhost:27017"
 	defaultMongoDBName = "shopify-inventory"
 	defaultStaticPath  = "web/build"
+	defaultProxyRoute  = "http://127.0.0.1:3000"
 
 	defaultInventoryLimit    = 15
 	defaultInventoryLimitMin = 1
@@ -27,6 +28,7 @@ type Spec struct {
 	MongoURI          string `mapstructure:"mongo_uri"`
 	MongoDBName       string `mapstructure:"mongo_db_name"`
 	StaticPath        string `mapstructure:"static_path"`
+	ProxyRoute        string `mapstructure:"proxy_route"`
 	InventoryLimit    int64  `mapstructure:"inventory_limit"`
 	InventoryLimitMin int64  `mapstructure:"inventory_limit_min"`
 	InventoryLimitMax int64  `mapstructure:"inventory_limit_max"`
@@ -40,6 +42,7 @@ var Global = Spec{
 	MongoURI:          defaultMongoURI,
 	MongoDBName:       defaultMongoDBName,
 	StaticPath:        defaultStaticPath,
+	ProxyRoute:        defaultProxyRoute,
 	InventoryLimit:    defaultInventoryLimit,
 	InventoryLimitMin: defaultInventoryLimitMin,
 	InventoryLimitMax: defaultInventoryLimitMax,

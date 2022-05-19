@@ -1,5 +1,11 @@
 run: ./cmd/shopify-inventory-server/main.go 
-	@go run ./cmd/shopify-inventory-server/main.go
+	@go run ./cmd/shopify-inventory-server/main.go --dev
+
+run-web: ./web/package.json ./web/package-lock.json 
+	@npm start --prefix web/
+
+build-web: ./web/package.json ./web/package-lock.json
+	@npm run build --prefix web/
 
 seed: ./seed/inventories.json ./seed/warehouse.json
 	@mongo shopify-inventory --eval "db.inventory.drop()"

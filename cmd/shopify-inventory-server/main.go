@@ -2,9 +2,12 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
+	"net/http/httputil"
+	"net/url"
 	"os"
 	"path/filepath"
 	"time"
@@ -17,6 +20,8 @@ import (
 	"github.com/iamnotrodger/shopify-inventory-server/internal/warehouse"
 	"github.com/rs/cors"
 )
+
+var flagDev = flag.Bool("dev", true, "Run in development mode")
 
 type spaHandler struct {
 	staticPath string
@@ -66,8 +71,17 @@ func main() {
 	// Warehouse Routes
 	warehouseHandler.RegisterRoutes(router)
 	// SPA Routes
-	spa := spaHandler{staticPath: config.Global.StaticPath, indexPath: "index.html"}
-	router.PathPrefix("/").Handler(spa)
+	if *flagDev {
+		proxyUrl, err := url.Parse(config.Global.ProxyRoute)
+		if err != nil {
+			log.Fatal(err)
+		}
+		proxy := httputil.NewSingleHostReverseProxy(proxyUrl)
+		router.PathPrefix("/").Handler(proxy)
+	} else {
+		spa := spaHandler{staticPath: config.Global.StaticPath, indexPath: "index.html"}
+		router.PathPrefix("/").Handler(spa)
+	}
 
 	server := &http.Server{
 		Handler:      cors.Default().Handler(router),
