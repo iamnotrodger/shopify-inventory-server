@@ -63,8 +63,8 @@ func (h *Handler) GetWarehouses(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) GetMany(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	queryParams := query.NewInventoryQuery(r.URL.Query())
-	inventories, err := h.store.FindMany(r.Context(), queryParams)
+	queryParam := query.NewInventoryQuery(r.URL.Query())
+	inventories, err := h.store.FindMany(r.Context(), queryParam)
 	if err != nil {
 		util.HandleError(w, err)
 		return
