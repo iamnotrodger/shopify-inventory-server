@@ -2,9 +2,13 @@ package warehouse
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/iamnotrodger/shopify-inventory-server/internal/model"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const (
@@ -23,7 +27,24 @@ func NewStore(db *mongo.Database) *Store {
 }
 
 func (s *Store) Find(ctx context.Context, warehouseID string) (*model.Warehouse, error) {
-	return nil, nil
+	id, err := primitive.ObjectIDFromHex(warehouseID)
+	if err != nil {
+		return nil, primitive.ErrInvalidHex
+	}
+
+	singleRes := s.db.Collection(WAREHOUSE).FindOne(ctx, bson.M{"_id": id}, &options.FindOneOptions{})
+	if err = singleRes.Err(); err != nil {
+		return nil, err
+	}
+
+	warehouse := &model.Warehouse{}
+	err = singleRes.Decode(warehouse)
+	if err != nil {
+		err = fmt.Errorf("error decoding inventory: %w", err)
+		return nil, err
+	}
+
+	return warehouse, nil
 }
 
 func (s *Store) FindInventories(ctx context.Context, warehouseID string) ([]*model.Inventory, error) {
