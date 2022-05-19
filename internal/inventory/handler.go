@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/iamnotrodger/shopify-inventory-server/internal/model"
 	"github.com/iamnotrodger/shopify-inventory-server/internal/query"
 	"github.com/iamnotrodger/shopify-inventory-server/internal/util"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -74,6 +75,28 @@ func (h *Handler) GetMany(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Post(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var inventory model.Inventory
+	err := json.NewDecoder(r.Body).Decode(&inventory)
+	if err != nil {
+		util.HandleError(w, err)
+		return
+	}
+
+	err = inventory.Validate()
+	if err != nil {
+		util.HandleError(w, err)
+		return
+	}
+
+	err = h.store.Insert(r.Context(), &inventory)
+	if err != nil {
+		util.HandleError(w, err)
+		return
+	}
+
+	json.NewEncoder(w).Encode(&inventory)
 }
 
 func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {

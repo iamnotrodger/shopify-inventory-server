@@ -125,7 +125,9 @@ func (s *Store) FindMany(ctx context.Context, queryParam ...query.QueryParams) (
 }
 
 func (s *Store) Insert(ctx context.Context, inventory *model.Inventory) error {
-	return nil
+	inventory.ID = primitive.NewObjectID()
+	_, err := s.collection.InsertOne(ctx, inventory)
+	return err
 }
 
 func (s *Store) Delete(ctx context.Context, inventoryID string) error {

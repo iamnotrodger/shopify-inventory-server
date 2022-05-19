@@ -3,6 +3,7 @@ package util
 import (
 	"net/http"
 
+	"github.com/iamnotrodger/shopify-inventory-server/internal/model"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -19,6 +20,8 @@ func HandleError(w http.ResponseWriter, err error) {
 	case primitive.ErrInvalidHex:
 		statusCode = http.StatusUnprocessableEntity
 		message = "Invalid ID"
+	case err.(*model.ErrInvalidModel):
+		statusCode = http.StatusUnprocessableEntity
 	default:
 		statusCode = http.StatusInternalServerError
 	}
