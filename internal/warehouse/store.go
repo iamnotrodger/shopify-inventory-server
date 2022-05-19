@@ -85,8 +85,16 @@ func (s *Store) FindInventories(ctx context.Context, warehouseID string, queryPa
 		Value: bson.D{{
 			Key: "$expr",
 			Value: bson.D{{
-				Key:   "$in",
-				Value: bson.A{"$_id", "$$inventory_ids"},
+				Key: "$in",
+				Value: bson.A{"$_id",
+					bson.D{{
+						Key: "$ifNull",
+						Value: bson.A{
+							"$$inventory_ids",
+							bson.A{},
+						},
+					}},
+				},
 			}},
 		}},
 	}}
