@@ -100,7 +100,28 @@ func (s *Store) FindWarehouses(ctx context.Context, inventoryID string, queryPar
 }
 
 func (s *Store) FindMany(ctx context.Context, queryParam ...query.QueryParams) ([]*model.Inventory, error) {
-	return nil, nil
+	var opts *options.FindOptions
+	filter := bson.D{}
+
+	if len(queryParam) > 0 {
+		filter = queryParam[0].GetFilter()
+		opts = queryParam[0].GetFindOptions()
+	}
+
+	cursor, err := s.collection.Find(ctx, filter, opts)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	inventories := []*model.Inventory{}
+	err = cursor.All(ctx, &inventories)
+	if err != nil {
+		err = fmt.Errorf("failed to unmarshal artists: %w", err)
+		return nil, err
+	}
+
+	return inventories, nil
 }
 
 func (s *Store) Insert(ctx context.Context, inventory *model.Inventory) error {
