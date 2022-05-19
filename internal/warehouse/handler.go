@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/iamnotrodger/shopify-inventory-server/internal/model"
 	"github.com/iamnotrodger/shopify-inventory-server/internal/query"
 	"github.com/iamnotrodger/shopify-inventory-server/internal/util"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -21,6 +22,7 @@ func NewHandler(db *mongo.Database) *Handler {
 }
 
 func (h *Handler) RegisterRoutes(router *mux.Router) {
+	router.HandleFunc("/api/warehouse", h.Post).Methods("POST")
 	router.HandleFunc("/api/warehouse/{id}", h.Get).Methods("GET")
 	router.HandleFunc("/api/warehouse/{id}/inventory", h.GetInventories).Methods("GET")
 	router.HandleFunc("/api/warehouse/{id}/inventory/{inventoryID}", h.PostInventory).Methods("POST")
@@ -59,6 +61,28 @@ func (h *Handler) GetInventories(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Post(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var warehouse model.Warehouse
+	err := json.NewDecoder(r.Body).Decode(&warehouse)
+	if err != nil {
+		util.HandleError(w, err)
+		return
+	}
+
+	err = warehouse.Validate()
+	if err != nil {
+		util.HandleError(w, err)
+		return
+	}
+
+	err = h.store.Insert(r.Context(), &warehouse)
+	if err != nil {
+		util.HandleError(w, err)
+		return
+	}
+
+	json.NewEncoder(w).Encode(&warehouse)
 }
 
 // PostInventory will add inventory to warehouse and add warehouse to the inventory

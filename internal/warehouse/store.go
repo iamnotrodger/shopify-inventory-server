@@ -104,8 +104,10 @@ func (s *Store) FindInventories(ctx context.Context, warehouseID string, queryPa
 	return warehouse.Inventories, nil
 }
 
-func (s *Store) Insert(ctx context.Context, inventory *model.Inventory) error {
-	return nil
+func (s *Store) Insert(ctx context.Context, warehouse *model.Warehouse) error {
+	warehouse.ID = primitive.NewObjectID()
+	_, err := s.db.Collection(WAREHOUSE).InsertOne(ctx, warehouse)
+	return err
 }
 
 // InsertInventory is a transaction that adds inventory to warehouse and add warehouse to inventory
