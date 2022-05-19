@@ -101,6 +101,23 @@ func (h *Handler) Post(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(&warehouse)
 }
 
+// PostInventory will add inventory to warehouse and add warehouse to the inventory
+func (h *Handler) PostInventory(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	warehouseID := params["id"]
+	inventoryID := params["inventoryID"]
+
+	err := h.store.InsertInventory(r.Context(), warehouseID, inventoryID)
+	if err != nil {
+		util.HandleError(w, err)
+		return
+	}
+
+	msg := fmt.Sprintf("inventory %s added to warehouse %s", inventoryID, warehouseID)
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(msg))
+}
+
 func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	warehouseID := params["id"]
@@ -116,18 +133,19 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(msg))
 }
 
-// PostInventory will add inventory to warehouse and add warehouse to the inventory
-func (h *Handler) PostInventory(w http.ResponseWriter, r *http.Request) {
-	// TODO: validate if warehouse exists
-	// TODO: validate if inventory exists
-	// TODO: add inventory to warehouse
-	// TODO: add warehouse to inventory
-}
-
 // PostInventory will delete inventory to warehouse and delete warehouse to the inventory
 func (h *Handler) DeleteInventory(w http.ResponseWriter, r *http.Request) {
-	// TODO: validate if warehouse exists
-	// TODO: validate if inventory exists
-	// TODO: delete inventory to warehouse
-	// TODO: delete warehouse to inventory
+	params := mux.Vars(r)
+	warehouseID := params["id"]
+	inventoryID := params["inventoryID"]
+
+	err := h.store.DeleteInventory(r.Context(), warehouseID, inventoryID)
+	if err != nil {
+		util.HandleError(w, err)
+		return
+	}
+
+	msg := fmt.Sprintf("inventory %s removed from warehouse %s", inventoryID, warehouseID)
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(msg))
 }
