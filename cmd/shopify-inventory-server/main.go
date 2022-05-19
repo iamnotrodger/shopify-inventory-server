@@ -27,12 +27,15 @@ func main() {
 	db := client.Database(config.Global.MongoDBName)
 
 	inventoryHandler := inventory.NewHandler(db)
+	warehouseHandler := inventory.NewHandler(db)
 
 	router := mux.NewRouter().StrictSlash(true)
 	router.Use(middleware.LoggingMiddleware)
 
-	//Inventory Routes
+	// Inventory Routes
 	inventoryHandler.RegisterRoutes(router)
+	// Warehouse Routes
+	warehouseHandler.RegisterRoutes(router)
 
 	server := cors.Default().Handler(router)
 	log.Println("API Started. Listening on", config.Global.Port)
