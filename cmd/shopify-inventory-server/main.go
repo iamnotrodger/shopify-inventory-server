@@ -12,6 +12,7 @@ import (
 	"github.com/iamnotrodger/shopify-inventory-server/internal/inventory"
 	"github.com/iamnotrodger/shopify-inventory-server/internal/middleware"
 	"github.com/iamnotrodger/shopify-inventory-server/internal/util"
+	"github.com/iamnotrodger/shopify-inventory-server/internal/warehouse"
 	"github.com/rs/cors"
 )
 
@@ -27,7 +28,7 @@ func main() {
 	db := client.Database(config.Global.MongoDBName)
 
 	inventoryHandler := inventory.NewHandler(db)
-	warehouseHandler := inventory.NewHandler(db)
+	warehouseHandler := warehouse.NewHandler(db)
 
 	router := mux.NewRouter().StrictSlash(true)
 	router.Use(middleware.LoggingMiddleware)
