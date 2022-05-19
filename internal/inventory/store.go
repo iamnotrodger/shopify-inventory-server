@@ -117,7 +117,7 @@ func (s *Store) FindMany(ctx context.Context, queryParam ...query.QueryParams) (
 	inventories := []*model.Inventory{}
 	err = cursor.All(ctx, &inventories)
 	if err != nil {
-		err = fmt.Errorf("failed to unmarshal artists: %w", err)
+		err = fmt.Errorf("failed to unmarshal inventory: %w", err)
 		return nil, err
 	}
 
