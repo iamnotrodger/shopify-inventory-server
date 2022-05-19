@@ -6,3 +6,7 @@ type Location struct {
 	Province string `json:"province,omitempty" bson:"province,omitempty"`
 	Country  string `json:"country,omitempty" bson:"country,omitempty"`
 }
+
+func (l *Location) Validate() error {
+	return nil
+}
