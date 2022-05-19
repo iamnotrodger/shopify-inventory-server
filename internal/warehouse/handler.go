@@ -23,6 +23,7 @@ func NewHandler(db *mongo.Database) *Handler {
 
 func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/api/warehouse", h.Post).Methods("POST")
+	router.HandleFunc("/api/warehouse", h.GetMany).Methods("GET")
 	router.HandleFunc("/api/warehouse/{id}", h.Get).Methods("GET")
 	router.HandleFunc("/api/warehouse/{id}/inventory", h.GetInventories).Methods("GET")
 	router.HandleFunc("/api/warehouse/{id}/inventory/{inventoryID}", h.PostInventory).Methods("POST")
@@ -42,6 +43,19 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(warehouse)
+}
+
+func (h *Handler) GetMany(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	queryParam := query.NewInventoryQuery(r.URL.Query())
+	warehouses, err := h.store.FindMany(r.Context(), queryParam)
+	if err != nil {
+		util.HandleError(w, err)
+		return
+	}
+
+	json.NewEncoder(w).Encode(warehouses)
 }
 
 func (h *Handler) GetInventories(w http.ResponseWriter, r *http.Request) {

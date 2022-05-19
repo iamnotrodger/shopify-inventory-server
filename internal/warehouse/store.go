@@ -48,6 +48,31 @@ func (s *Store) Find(ctx context.Context, warehouseID string) (*model.Warehouse,
 	return warehouse, nil
 }
 
+func (s *Store) FindMany(ctx context.Context, queryParam ...query.QueryParams) ([]*model.Warehouse, error) {
+	var opts *options.FindOptions
+	filter := bson.D{}
+
+	if len(queryParam) > 0 {
+		filter = queryParam[0].GetFilter()
+		opts = queryParam[0].GetFindOptions()
+	}
+
+	cursor, err := s.db.Collection(WAREHOUSE).Find(ctx, filter, opts)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	warehouses := []*model.Warehouse{}
+	err = cursor.All(ctx, &warehouses)
+	if err != nil {
+		err = fmt.Errorf("failed to unmarshal warehouse: %w", err)
+		return nil, err
+	}
+
+	return warehouses, nil
+}
+
 func (s *Store) FindInventories(ctx context.Context, warehouseID string, queryParam ...query.QueryParams) ([]*model.Inventory, error) {
 	id, err := primitive.ObjectIDFromHex(warehouseID)
 	if err != nil {
