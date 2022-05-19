@@ -2,6 +2,7 @@
 	{
 		"_id": { "$oid": "60e0c4aeffdd3e5211a78a32" },
 		"name": "inventory_1",
+		"price": 10.0,
 		"warehouse_ids": [
 			{ "$oid": "60e0850266d6c13d7b599b69" },
 			{ "$oid": "60e0850266d6c13d7b599b6a" }
@@ -10,6 +11,7 @@
 	{
 		"_id": { "$oid": "60e0c4aeffdd3e5211a78a33" },
 		"name": "inventory_2",
+		"price": 10.1,
 		"warehouse_ids": [{ "$oid": "60e0850266d6c13d7b599b69" }]
 	}
 ]
