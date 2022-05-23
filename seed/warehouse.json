@@ -1,7 +1,7 @@
 [
 	{
 		"_id": { "$oid": "60e0850266d6c13d7b599b69" },
-		"name": "warehouse_1",
+		"name": "Warehouse-1",
 		"location": {
 			"street": "street_1",
 			"city": "city_1",
@@ -15,7 +15,7 @@
 	},
 	{
 		"_id": { "$oid": "60e0850266d6c13d7b599b6a" },
-		"name": "warehouse_2",
+		"name": "Warehouse-2",
 		"location": {
 			"street": "street_2",
 			"city": "city_2",
