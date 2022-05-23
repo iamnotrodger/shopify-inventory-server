@@ -1,5 +1,5 @@
 import styled from 'styled-components';
 
 export default styled.main`
-	padding: 1rem;
+	padding: 1rem 4rem;
 `;
