@@ -23,7 +23,7 @@ export const getInventory = async (id) => {
 export const getInventoryWarehouses = async (id, query) => {
 	const queryString = buildQueryString(query);
 	const response = await fetch(
-		`/api/inventory/${id}/warehouses${queryString}`
+		`/api/inventory/${id}/warehouse${queryString}`
 	);
 
 	if (!response.ok) throw await RequestError.parseResponse(response);
