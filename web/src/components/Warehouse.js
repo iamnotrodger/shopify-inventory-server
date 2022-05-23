@@ -8,7 +8,10 @@ const Warehouse = ({ value = {} }) => {
 			<IconContainer>
 				<WarehouseIcon height={1.5} width={1.5} />
 			</IconContainer>
-			<Name>{value.name}</Name>
+			<Info>
+				<Name>{value.name}</Name>
+				<Location>{value.location && value.location.street}</Location>
+			</Info>
 		</Container>
 	);
 };
@@ -16,7 +19,7 @@ const Warehouse = ({ value = {} }) => {
 const Container = styled.div`
 	display: flex;
 	align-items: center;
-	gap: 0.5rem;
+	gap: 0.75rem;
 	padding: 2rem;
 	border-radius: var(--rounded-xl);
 	box-shadow: var(--shadow);
@@ -29,12 +32,19 @@ const Container = styled.div`
 		box-shadow: var(--shadow);
 	}
 `;
-const IconContainer = styled.div``;
+const IconContainer = styled.div`
+	align-self: center;
+`;
+const Info = styled.div``;
 const Name = styled.div`
 	font-family: var(--font-primary);
 	font-size: var(--text-lg);
 	font-weight: var(--font-bold);
 	line-height: 1;
+`;
+const Location = styled.div`
+	font-family: var(--font-secondary);
+	font-size: var(--text-base);
 `;
 
 export default Warehouse;
