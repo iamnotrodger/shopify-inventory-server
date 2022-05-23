@@ -2,7 +2,8 @@ deploy:
 	@npm install --prefix web/
 	@npm run build --prefix web/
 	@go mod download
-	@go run ./cmd/shopify-inventory-server/main.go
+	@go build -v -o . ./...
+	@./shopify-inventory-server
 
 run: ./cmd/shopify-inventory-server/main.go 
 	@go run ./cmd/shopify-inventory-server/main.go --dev
