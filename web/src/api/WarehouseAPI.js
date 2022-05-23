@@ -67,6 +67,7 @@ export const postInventoryToWarehouse = async (warehouseID, inventoryID) => {
 	);
 
 	if (!response.ok) throw await RequestError.parseResponse(response);
+	return inventoryID;
 };
 
 export const deleteInventoryFromWarehouse = async (
@@ -82,4 +83,5 @@ export const deleteInventoryFromWarehouse = async (
 	);
 
 	if (!response.ok) throw await RequestError.parseResponse(response);
+	return inventoryID;
 };
