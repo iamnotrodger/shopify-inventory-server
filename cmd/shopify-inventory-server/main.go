@@ -21,7 +21,7 @@ import (
 	"github.com/rs/cors"
 )
 
-var flagDev = flag.Bool("dev", true, "Run in development mode")
+var flagDev = flag.Bool("dev", false, "Run in development mode")
 
 type spaHandler struct {
 	staticPath string
@@ -51,6 +51,7 @@ func (h spaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	config.LoadConfig()
+	flag.Parse()
 
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	client, err := util.GetMongoClient(ctx, config.Global.MongoURI)
@@ -72,6 +73,7 @@ func main() {
 	warehouseHandler.RegisterRoutes(router)
 	// SPA Routes
 	if *flagDev {
+		log.Println("Running in Development Mode")
 		proxyUrl, err := url.Parse(config.Global.ProxyRoute)
 		if err != nil {
 			log.Fatal(err)
@@ -85,7 +87,7 @@ func main() {
 
 	server := &http.Server{
 		Handler:      cors.Default().Handler(router),
-		Addr:         fmt.Sprintf("127.0.0.1:%v", config.Global.Port),
+		Addr:         fmt.Sprintf("0.0.0.0:%v", config.Global.Port),
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
