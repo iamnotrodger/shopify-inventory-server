@@ -6,7 +6,7 @@ const WarehouseList = ({ items = [], children }) => {
 	return (
 		<List>
 			{items.map((warehouse, i) => (
-				<Link key={i} to={`warehouse/${warehouse._id}`}>
+				<Link key={i} to={`/warehouse/${warehouse._id}`}>
 					<Warehouse value={warehouse} />
 				</Link>
 			))}

@@ -6,7 +6,7 @@ const InventoryList = ({ items = [], children }) => {
 	return (
 		<List>
 			{items.map((inventory, i) => (
-				<Link key={i} to={`inventory/${inventory._id}`}>
+				<Link key={i} to={`/inventory/${inventory._id}`}>
 					<Inventory value={inventory} />
 				</Link>
 			))}
