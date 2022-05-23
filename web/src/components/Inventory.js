@@ -17,6 +17,7 @@ const Inventory = ({ value = {} }) => {
 
 const Container = styled.div`
 	display: flex;
+	overflow: hidden;
 	gap: 0.5rem;
 	padding: 2rem;
 	border-radius: var(--rounded-xl);

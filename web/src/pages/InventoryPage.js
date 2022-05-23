@@ -56,13 +56,16 @@ const InventoryPage = () => {
 			<Info>
 				<Name>{inventory && inventory.name}</Name>
 				<Price>${inventory && inventory.price}</Price>
+				<Tools>
+					<Button
+						onClick={openUpdateModal}
+						background='rgb(59 130 246)'
+					>
+						Update
+					</Button>
+					<Button onClick={openDeleteModal}>Delete</Button>
+				</Tools>
 			</Info>
-			<Tools>
-				<Button onClick={openUpdateModal} background='rgb(59 130 246)'>
-					Update
-				</Button>
-				<Button onClick={openDeleteModal}>Delete</Button>
-			</Tools>
 			<Header>Warehouses</Header>
 			<WarehouseList items={warehouses} />
 			<ModalContainer isOpen={updateModal} onClose={closeUpdateModal}>
@@ -80,33 +83,36 @@ const InventoryPage = () => {
 
 const Info = styled.div`
 	display: flex;
+	flex-direction: column;
 	align-items: center;
-	gap: 1rem;
-	padding: 0.5rem 0;
+	width: max-content;
+	padding: 2rem;
+	border-radius: var(--rounded-3xl);
+	box-shadow: var(--shadow);
 `;
 const Name = styled.h3`
-	font-size: var(--text-xl);
+	font-size: var(--text-4xl);
 	font-weight: var(--font-bold);
-	width: min-content;
+	width: max-content;
 	line-height: 1.1;
 	padding: 1rem;
 	margin-bottom: 0.5rem;
 	background-color: var(--color-gray-100);
-	border-radius: var(--rounded-full);
+	border-radius: var(--rounded-3xl);
 `;
 const Price = styled.div`
 	font-family: var(--font-secondary);
-	font-size: var(--text-lg);
-	font-weight: var(--font-bold);
+	font-size: var(--text-xl);
 `;
 const Tools = styled.div`
 	display: flex;
 	gap: 0.5rem;
+	margin-top: 0.75rem;
 `;
 const Button = styled.button`
 	font-family: var(--font-primary);
 	font-weight: var(--font-bold);
-	padding: 1rem;
+	padding: 0.5rem;
 	transition: var(--transition);
 	color: var(--color-light);
 	background-color: ${(props) =>
