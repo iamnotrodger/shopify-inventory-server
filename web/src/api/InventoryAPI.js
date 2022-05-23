@@ -55,6 +55,7 @@ export const deleteInventory = async (id) => {
 	});
 
 	if (!response.ok) throw await RequestError.parseResponse(response);
+	return id;
 };
 
 export const updateInventory = async (id, inventory) => {
