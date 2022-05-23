@@ -7,6 +7,7 @@
   --color-gray-400: rgba(156, 163, 175, 1);
   --color-gray-500: rgba(107, 114, 128, 1);
   --color-success: rgb(52 211 153);
+  --color-error: rgb(234 88 12);
 
   --font-primary: 'Chivo', sans-serif;
   --font-secondary: 'Overpass', sans-serif;

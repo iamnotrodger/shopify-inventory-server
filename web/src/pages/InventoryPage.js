@@ -25,7 +25,7 @@ const InventoryPage = () => {
 		}
 	);
 	const { data: warehouses } = useQuery(
-		['inventory', 'warehouse', id],
+		['inventory-warehouses', id],
 		() => getInventoryWarehouses(id),
 		{
 			staleTime: 60 * 1000,
@@ -116,7 +116,7 @@ const Button = styled.button`
 	transition: var(--transition);
 	color: var(--color-light);
 	background-color: ${(props) =>
-		props.background ? props.background : 'rgb(234 88 12)'};
+		props.background ? props.background : 'var(--color-error)'};
 	border-radius: var(--rounded-xl);
 
 	cursor: pointer;
