@@ -1,7 +1,14 @@
+deploy: 
+	@npm install --prefix web/
+	@npm run build --prefix web/
+	@go mod download
+	@go run ./cmd/shopify-inventory-server/main.go
+
 run: ./cmd/shopify-inventory-server/main.go 
 	@go run ./cmd/shopify-inventory-server/main.go --dev
 
 run-web: ./web/package.json ./web/package-lock.json 
+	@npm install --prefix web/
 	@npm start --prefix web/
 
 build-web: ./web/package.json ./web/package-lock.json
