@@ -7,27 +7,30 @@ const useDeleteWarehouseInventory = (warehouseID, callback) => {
 		(inventoryID) => deleteInventoryFromWarehouse(warehouseID, inventoryID),
 		{
 			onSuccess: (inventoryID) => {
-				const inventories =
-					queryClient.getQueryData([
+				let newInventories;
+				const inventories = queryClient.getQueryData([
+					'warehouse-inventory',
+					warehouseID,
+				]);
+				if (inventories) {
+					newInventories = removeInventory(inventories, inventoryID);
+					queryClient.setQueryData(
 						'warehouse-inventory',
-						warehouseID,
-					]) || [];
-				const newInventories = removeInventory(
-					inventories,
-					inventoryID
-				);
-				queryClient.setQueryData('warehouse-inventory', newInventories);
+						newInventories
+					);
+				}
 
-				const warehouses =
-					queryClient.getQueryData([
-						'inventory-warehouses',
-						inventoryID,
-					]) || [];
-				queryClient.setQueryData(
+				const warehouses = queryClient.getQueryData([
 					'inventory-warehouses',
-					removeInventory(warehouses, warehouseID)
-				);
-				if (callback) callback(newInventories);
+					inventoryID,
+				]);
+				if (warehouses) {
+					queryClient.setQueryData(
+						'inventory-warehouses',
+						removeInventory(warehouses, warehouseID)
+					);
+				}
+				if (newInventories && callback) callback(newInventories);
 			},
 		}
 	);

@@ -11,28 +11,31 @@ const useAddWarehouseInventory = (warehouse, callback) => {
 
 	return useMutation(addInventory, {
 		onSuccess: (inventory) => {
-			const inventories =
-				queryClient.getQueryData([
-					'warehouse-inventory',
-					warehouse._id,
-				]) || [];
-			const newInventories = [...inventories, inventory];
-			queryClient.setQueryData(
-				['warehouse-inventory', warehouse._id],
-				newInventories
-			);
-
-			const warehouses =
-				queryClient.getQueryData([
-					'inventory-warehouses',
-					inventory._id,
-				]) || [];
-			queryClient.setQueryData('inventory-warehouses', [
-				...warehouses,
-				warehouse,
+			let newInventories;
+			const inventories = queryClient.getQueryData([
+				'warehouse-inventory',
+				warehouse._id,
 			]);
+			if (inventories) {
+				newInventories = [...inventories, inventory];
+				queryClient.setQueryData(
+					['warehouse-inventory', warehouse._id],
+					newInventories
+				);
+			}
 
-			if (callback) callback(newInventories);
+			const warehouses = queryClient.getQueryData([
+				'inventory-warehouses',
+				inventory._id,
+			]);
+			if (warehouses) {
+				queryClient.setQueryData('inventory-warehouses', [
+					...warehouses,
+					warehouse,
+				]);
+			}
+
+			if (newInventories && callback) callback(newInventories);
 		},
 	});
 };
