@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { getInventories } from '../api/InventoryAPI';
 import { getWarehouse, getWarehouseInventories } from '../api/WarehouseAPI';
+import Location from '../components/Location';
 import WarehouseInventoryList from '../components/WarehouseInventoryList';
 import Header from '../elements/Header';
 import Main from '../elements/Main';
@@ -37,27 +38,27 @@ const WarehousePage = () => {
 	);
 
 	const [availableInventories, setAvailableInventories] = useState([]);
-	const updateAvailableInventories = (warehouseInventories, inventories) => {
-		if (!warehouseInventories || !inventories) return [];
-		setAvailableInventories(
-			filterInventories(warehouseInventories, inventories)
-		);
-	};
+	const updateAvailableInventories = useCallback(
+		(warehouseInventories) => {
+			setAvailableInventories(
+				filterInventories(warehouseInventories, inventories)
+			);
+		},
+		[inventories]
+	);
 
 	const { mutate: removeInventory } = useDeleteWarehouseInventory(
 		id,
-		(newInventories) =>
-			updateAvailableInventories(newInventories, inventories)
+		updateAvailableInventories
 	);
 	const { mutate: addInventory } = useAddWarehouseInventory(
 		warehouse,
-		(newInventories) =>
-			updateAvailableInventories(newInventories, inventories)
+		updateAvailableInventories
 	);
 
 	useEffect(() => {
-		updateAvailableInventories(warehouseInventories, inventories);
-	}, [warehouseInventories, inventories]);
+		updateAvailableInventories(warehouseInventories);
+	}, [warehouseInventories, inventories, updateAvailableInventories]);
 
 	const handleRemoveInventory = (inventory) => {
 		removeInventory(inventory._id);
@@ -70,35 +71,9 @@ const WarehousePage = () => {
 	return (
 		<Main>
 			<Header>Warehouse</Header>
-			{/* <Warehouse value={warehouse} /> */}
 			<Container>
 				<Name>{warehouse && warehouse.name}</Name>
-				<Location>
-					<Info>
-						<Label>Street</Label>
-						<Text>
-							{warehouse.location && warehouse.location.street}
-						</Text>
-					</Info>
-					<Info>
-						<Label>City</Label>
-						<Text>
-							{warehouse.location && warehouse.location.city}
-						</Text>
-					</Info>
-					<Info>
-						<Label>Province</Label>
-						<Text>
-							{warehouse.location && warehouse.location.province}
-						</Text>
-					</Info>
-					<Info>
-						<Label>Country</Label>
-						<Text>
-							{warehouse.location && warehouse.location.country}
-						</Text>
-					</Info>
-				</Location>
+				<Location value={warehouse.location} />
 			</Container>
 			<ListContainer>
 				<List>
@@ -131,6 +106,7 @@ const WarehousePage = () => {
 };
 
 const filterInventories = (warehouseInventories, inventories) => {
+	if (!warehouseInventories) return inventories || [];
 	return inventories.filter(
 		(a) => !warehouseInventories.some((b) => a._id === b._id)
 	);
@@ -146,20 +122,6 @@ const Name = styled.h3`
 	font-weight: var(--font-bold);
 	margin-bottom: 1rem;
 `;
-const Location = styled.div`
-	display: flex;
-	flex-direction: column;
-	gap: 0.5rem;
-`;
-const Info = styled.div``;
-const Label = styled.div`
-	font-weight: var(--font-bold);
-`;
-const Text = styled.div`
-	font-family: var(--font-secondary);
-	font-size: var(--text-sm);
-`;
-
 const ListContainer = styled.div`
 	display: flex;
 	gap: 2rem;
