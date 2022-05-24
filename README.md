@@ -45,9 +45,9 @@ curl --location --request POST 'localhost:8080/api/inventory' \
 
 ```json
 {
-	"_id": <id>,
-	"name": <name>,
-	"price": <price>,
+	"_id": <string>,
+	"name": <string>,
+	"price": <float>,
 }
 ```
 
@@ -55,13 +55,13 @@ curl --location --request POST 'localhost:8080/api/inventory' \
 
 ```json
 {
-	"_id": <id>,
-	"name": <name>,
+	"_id": <string>,
+	"name": <string>,
 	"location": {
-		"street": <street>,
-		"city": <city>,
-		"province": <province>,
-		"country": <country>
+		"street": <string>,
+		"city": <string>,
+		"province": <string>,
+		"country": <string>
 	}
 }
 ```
